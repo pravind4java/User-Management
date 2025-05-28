@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.example.jrtp.constants.AppConstants;
 import com.example.jrtp.dto.QuoteApiResponseDto;
 import com.example.jrtp.dto.ResetPasswordDto;
 import com.example.jrtp.dto.UserDto;
@@ -26,7 +27,7 @@ public class UserController {
 	public String index(Model model) {
 		UserDto userDto = new UserDto();
 		model.addAttribute("user", userDto);
-		return "index";
+		return AppConstants.INDEX_PAGE;
 	}
 
 	@PostMapping("/login")
@@ -34,7 +35,7 @@ public class UserController {
 		UserDto loginUser = userService.login(userDto.getEmail(), userDto.getPwd());
 		if (loginUser == null) {
 			model.addAttribute("emsg", "Invalid Credentials.");
-			return "index";
+			return AppConstants.INDEX_PAGE;
 		}
 		String pwdUpdated = loginUser.getPwdUpdated();
 		if (pwdUpdated.equalsIgnoreCase("No")) {
@@ -112,10 +113,4 @@ public class UserController {
 		return "dashboard";
 	}
 
-	@GetMapping("/logout")
-	public String logout(Model model) {
-		UserDto dto = new UserDto();
-		model.addAttribute("user", dto);
-		return "index";
-	}
 }

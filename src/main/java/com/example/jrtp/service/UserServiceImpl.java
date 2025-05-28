@@ -42,13 +42,13 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private EmailService emailService;
 
+	private Random random = new Random();
+
 	@Override
 	public Map<Integer, String> getCountries() {
 		Map<Integer, String> countryMap = new HashMap<>();
 		List<CountryEntity> countriesList = countryRepo.findAll();
-		countriesList.forEach(e -> {
-			countryMap.put(e.getCountryId(), e.getCountryName());
-		});
+		countriesList.forEach(e -> countryMap.put(e.getCountryId(), e.getCountryName()));
 		return countryMap;
 	}
 
@@ -56,9 +56,7 @@ public class UserServiceImpl implements UserService {
 	public Map<Integer, String> getStatesByCountryId(Integer countryId) {
 		List<StateEntity> statesList = stateRepo.findByCountryCountryId(countryId);
 		Map<Integer, String> stateMap = new HashMap<>();
-		statesList.forEach(e -> {
-			stateMap.put(e.getStateId(), e.getStateName());
-		});
+		statesList.forEach(e -> stateMap.put(e.getStateId(), e.getStateName()));
 		return stateMap;
 	}
 
@@ -66,9 +64,7 @@ public class UserServiceImpl implements UserService {
 	public Map<Integer, String> getCitiesByStateId(Integer stateId) {
 		List<CityEntity> cityList = cityRepo.findByStateStateId(stateId);
 		Map<Integer, String> map = new HashMap<>();
-		cityList.forEach(e -> {
-			map.put(e.getCityId(), e.getCityName());
-		});
+		cityList.forEach(e -> map.put(e.getCityId(), e.getCityName()));
 		return map;
 	}
 
@@ -86,9 +82,15 @@ public class UserServiceImpl implements UserService {
 		Optional<StateEntity> stateEntity = stateRepo.findById(dto.getStateId());
 		Optional<CityEntity> cityEntity = cityRepo.findById(dto.getCityId());
 
-		entity.setCountry(countryEntity.get());
-		entity.setState(stateEntity.get());
-		entity.setCity(cityEntity.get());
+		if (countryEntity.isPresent()) {
+			entity.setCountry(countryEntity.get());
+		}
+		if (stateEntity.isPresent()) {
+			entity.setState(stateEntity.get());
+		}
+		if (cityEntity.isPresent()) {
+			entity.setCity(cityEntity.get());
+		}
 
 		String randomGeneratedPassword = generateRandomPassword();
 		entity.setPwd(randomGeneratedPassword);
@@ -138,7 +140,6 @@ public class UserServiceImpl implements UserService {
 	private String generateRandomPassword() {
 		String charPool = "ABCDEFGHIJKLMNOPQRTUVWXYZ0123456789";
 		int pwdMaxLength = 5;
-		Random random = new Random();
 		StringBuilder builder = new StringBuilder();
 		for (int i = 0; i < pwdMaxLength; i++) {
 			int index = random.nextInt(charPool.length());

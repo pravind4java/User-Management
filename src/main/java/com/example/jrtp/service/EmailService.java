@@ -1,5 +1,7 @@
 package com.example.jrtp.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -14,7 +16,9 @@ public class EmailService {
 
 	@Value("${spring.mail.username}")
 	private String fromEmail;
-	
+
+	private Logger logger = LoggerFactory.getLogger(EmailService.class);
+
 	public boolean isEmailSend(String to, String subject, String body) {
 
 		SimpleMailMessage mail = new SimpleMailMessage();
@@ -26,7 +30,7 @@ public class EmailService {
 			mail.setText(body);
 			mail.setFrom(fromEmail);
 			mailSender.send(mail);
-			System.out.println("email send successfully to: "+to);
+			logger.info("Email send successfully to: {}", to);
 			return true;
 		} catch (Exception ex) {
 			ex.printStackTrace();
